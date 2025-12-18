@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Security Playground</title>
+    <style>
+        body { background: #0d1117; color: #c9d1d9; font-family: monospace; max-width: 800px; margin: auto; padding: 20px; }
+        h1 { color: #58a6ff; }
+        .terminal { background: #161b22; padding: 15px; border-radius: 5px; margin: 20px 0; }
+        .prompt { color: #7ee787; }
+        .blink { animation: blink 1s infinite; }
+        @keyframes blink { 50% { opacity: 0; } }
+    </style>
+</head>
+<body>
+    <h1>🔐 Security Student's Lab</h1>
+    <p>This is my cybersecurity playground on GitHub Pages.</p>
+    
+    <div class="terminal">
+        <span class="prompt">visitor@gh-pages ~ $</span> cat welcome.txt<br>
+        > Website under construction.<br>
+        > Security experiments incoming.
+    </div>
+    <h2>🎯 Quick Start</h2>
+    <ul>
+        <li>View page source (Right-click → "View Page Source")</li>
+        <li>Open Console (F12) for hidden surprises</li>
+        <li>More content coming soon...</li>
+    </ul>
+
+    <script>
+        // 控制台彩蛋
+        console.log("%c🔓 Hidden Level Unlocked", "color: green; font-size: large");
+        console.log("Try adding '#debug' to the URL and refresh!");
+        
+        // URL哈希检测
+        if(window.location.hash === '#debug') {
+            document.body.innerHTML += '<p style="color:red;">[DEBUG MODE] Welcome, admin.</p>';
+        }
+    </script>
+</body>
+</html>
