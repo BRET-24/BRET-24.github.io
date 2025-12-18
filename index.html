@@ -1,41 +1,490 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
-    <title>Security Playground</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BRET-24 的安全实验室</title>
     <style>
-        body { background: #0d1117; color: #c9d1d9; font-family: monospace; max-width: 800px; margin: auto; padding: 20px; }
-        h1 { color: #58a6ff; }
-        .terminal { background: #161b22; padding: 15px; border-radius: 5px; margin: 20px 0; }
-        .prompt { color: #7ee787; }
-        .blink { animation: blink 1s infinite; }
-        @keyframes blink { 50% { opacity: 0; } }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%);
+            color: #00ff00;
+            font-family: 'Courier New', Consolas, monospace;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            position: relative;
+        }
+        
+        .scan-line {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: rgba(0, 255, 0, 0.5);
+            box-shadow: 0 0 10px #0f0;
+            z-index: 1000;
+            animation: scan 3s linear infinite;
+        }
+        
+        @keyframes scan {
+            0% { top: 0%; }
+            100% { top: 100%; }
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #00ff00;
+            position: relative;
+        }
+        
+        h1 {
+            color: #00ff00;
+            font-size: 2.8rem;
+            text-shadow: 0 0 10px #00ff00;
+            margin-bottom: 15px;
+        }
+        
+        .glitch {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .glitch::before,
+        .glitch::after {
+            content: "欢迎来到我的网站";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .glitch::before {
+            left: 2px;
+            text-shadow: -2px 0 #ff00ff;
+            animation: glitch-1 2s infinite linear alternate-reverse;
+        }
+        
+        .glitch::after {
+            left: -2px;
+            text-shadow: 2px 0 #00ffff;
+            animation: glitch-2 3s infinite linear alternate-reverse;
+        }
+        
+        @keyframes glitch-1 {
+            0% { clip-path: inset(40% 0 61% 0); }
+            100% { clip-path: inset(5% 0 85% 0); }
+        }
+        
+        @keyframes glitch-2 {
+            0% { clip-path: inset(25% 0 58% 0); }
+            100% { clip-path: inset(75% 0 10% 0); }
+        }
+        
+        .subtitle {
+            color: #00cc00;
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+        }
+        
+        .terminal {
+            background: rgba(0, 20, 0, 0.7);
+            border: 1px solid #00ff00;
+            border-radius: 5px;
+            padding: 25px;
+            margin: 30px 0;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .terminal::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #ff0000, #00ff00, #0000ff);
+        }
+        
+        .prompt {
+            color: #00ff00;
+            font-weight: bold;
+        }
+        
+        .input-line {
+            margin: 15px 0;
+        }
+        
+        .blink {
+            display: inline-block;
+            width: 8px;
+            height: 16px;
+            background: #00ff00;
+            vertical-align: middle;
+            margin-left: 5px;
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+        
+        .content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin: 40px 0;
+        }
+        
+        .card {
+            background: rgba(10, 30, 10, 0.5);
+            border: 1px solid #008800;
+            border-radius: 8px;
+            padding: 25px;
+            transition: all 0.3s;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 255, 0, 0.2);
+            border-color: #00ff00;
+        }
+        
+        h2 {
+            color: #00ff00;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+            border-bottom: 1px solid #008800;
+            padding-bottom: 8px;
+        }
+        
+        ul {
+            list-style-type: none;
+            padding-left: 10px;
+        }
+        
+        li {
+            margin: 12px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        li::before {
+            content: ">>";
+            position: absolute;
+            left: 0;
+            color: #00ff00;
+        }
+        
+        .hacker-btn {
+            display: inline-block;
+            background: transparent;
+            color: #00ff00;
+            border: 1px solid #00ff00;
+            padding: 12px 25px;
+            font-family: 'Courier New', monospace;
+            font-size: 1rem;
+            margin: 10px 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+        
+        .hacker-btn:hover {
+            background: rgba(0, 255, 0, 0.1);
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid #008800;
+            color: #008800;
+            font-size: 0.9rem;
+        }
+        
+        .matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.05;
+            pointer-events: none;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            h1 { font-size: 2rem; }
+            .container { padding: 20px 15px; }
+            .content { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
-    <h1>🔐 Security Student's Lab</h1>
-    <p>This is my cybersecurity playground on GitHub Pages.</p>
+    <!-- 扫描线效果 -->
+    <div class="scan-line"></div>
     
-    <div class="terminal">
-        <span class="prompt">visitor@gh-pages ~ $</span> cat welcome.txt<br>
-        > Website under construction.<br>
-        > Security experiments incoming.
+    <!-- 矩阵背景 -->
+    <canvas class="matrix-bg" id="matrixCanvas"></canvas>
+    
+    <div class="container">
+        <header>
+            <h1><span class="glitch">欢迎来到我的网站</span></h1>
+            <p class="subtitle">BRET-24 的网络安全实验室 | 信息安全学生 | 白帽黑客</p>
+        </header>
+        
+        <div class="terminal">
+            <div class="input-line">
+                <span class="prompt">root@bret-24:~#</span> whoami
+                <div>BRET-24 - 信息安全学生 & 网络安全爱好者</div>
+            </div>
+            
+            <div class="input-line">
+                <span class="prompt">root@bret-24:~#</span> cat about_me.txt
+                <div>> 专业：信息安全</div>
+                <div>> 技能：渗透测试 | CTF | 漏洞研究 | Web安全</div>
+                <div>> 状态：正在学习，持续探索中...</div>
+            </div>
+            
+            <div class="input-line">
+                <span class="prompt">root@bret-24:~#</span> 
+                <span id="typing"></span><span class="blink"></span>
+            </div>
+        </div>
+        
+        <div class="content">
+            <div class="card">
+                <h2>🎯 近期目标</h2>
+                <ul>
+                    <li>学习Web渗透测试技术</li>
+                    <li>参加更多CTF比赛</li>
+                    <li>搭建个人安全实验室</li>
+                    <li>研究漏洞挖掘与利用</li>
+                    <li>开发安全工具脚本</li>
+                </ul>
+            </div>
+            
+            <div class="card">
+                <h2>🛠️ 技术栈</h2>
+                <ul>
+                    <li>Kali Linux & 渗透测试工具</li>
+                    <li>Python (安全工具开发)</li>
+                    <li>Web安全 (SQLi, XSS, CSRF等)</li>
+                    <li>网络协议分析</li>
+                    <li>逆向工程基础</li>
+                    <li>Git & GitHub</li>
+                </ul>
+            </div>
+            
+            <div class="card">
+                <h2>🔍 探索本站</h2>
+                <ul>
+                    <li>按F12打开控制台有惊喜</li>
+                    <li>URL添加 #admin 进入管理员模式</li>
+                    <li>查看页面源代码寻找隐藏信息</li>
+                    <li>尝试点击下方各种按钮</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin: 40px 0;">
+            <a href="javascript:void(0)" class="hacker-btn" onclick="runHack()">模拟渗透测试</a>
+            <a href="javascript:void(0)" class="hacker-btn" onclick="showMatrix()">启动矩阵</a>
+            <a href="javascript:void(0)" class="hacker-btn" onclick="toggleTerminal()">展开终端</a>
+            <a href="https://github.com/BRET-24" class="hacker-btn" target="_blank">访问我的GitHub</a>
+        </div>
+        
+        <footer>
+            <p>📍 本网站托管于 GitHub Pages | 🔒 仅供学习与合法安全研究</p>
+            <p>🛡️ 记住：能力越大，责任越大 | ⚠️ 请遵守网络安全法律法规</p>
+            <p>© 2023 BRET-24 的安全实验室 | 最后更新: <span id="currentDate"></span></p>
+        </footer>
     </div>
-    <h2>🎯 Quick Start</h2>
-    <ul>
-        <li>View page source (Right-click → "View Page Source")</li>
-        <li>Open Console (F12) for hidden surprises</li>
-        <li>More content coming soon...</li>
-    </ul>
 
     <script>
+        // 设置当前日期
+        document.getElementById('currentDate').textContent = new Date().toLocaleDateString('zh-CN');
+        
+        // 打字机效果
+        const texts = [
+            "正在扫描系统漏洞...",
+            "分析网络流量中...",
+            "渗透测试进行中...",
+            "破解加密算法...",
+            "访问安全实验室..."
+        ];
+        let textIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+        
+        function typeEffect() {
+            const currentText = texts[textIndex];
+            const typingElement = document.getElementById('typing');
+            
+            if (isDeleting) {
+                typingElement.textContent = currentText.substring(0, charIndex - 1);
+                charIndex--;
+            } else {
+                typingElement.textContent = currentText.substring(0, charIndex + 1);
+                charIndex++;
+            }
+            
+            if (!isDeleting && charIndex === currentText.length) {
+                isDeleting = true;
+                setTimeout(typeEffect, 2000); // 暂停2秒后开始删除
+            } else if (isDeleting && charIndex === 0) {
+                isDeleting = false;
+                textIndex = (textIndex + 1) % texts.length;
+                setTimeout(typeEffect, 500); // 暂停0.5秒后开始下一句
+            } else {
+                setTimeout(typeEffect, isDeleting ? 50 : 100);
+            }
+        }
+        
+        // 启动打字机效果
+        setTimeout(typeEffect, 1000);
+        
         // 控制台彩蛋
-        console.log("%c🔓 Hidden Level Unlocked", "color: green; font-size: large");
-        console.log("Try adding '#debug' to the URL and refresh!");
+        console.log("%c🔐 安全警报解除", "color: #00ff00; font-size: 20px; font-weight: bold;");
+        console.log("%c👤 用户: BRET-24", "color: #00ffff;");
+        console.log("%c🛡️ 权限: 管理员", "color: #ffaa00;");
+        console.log("%c💡 提示: 试试在URL末尾添加 #admin", "color: #ff00ff;");
+        console.log("%c⚠️ 警告: 本控制台信息仅供娱乐，请勿用于非法用途", "color: #ff0000;");
         
         // URL哈希检测
-        if(window.location.hash === '#debug') {
-            document.body.innerHTML += '<p style="color:red;">[DEBUG MODE] Welcome, admin.</p>';
+        if (window.location.hash === '#admin') {
+            document.body.innerHTML += `
+                <div style="position: fixed; top: 20px; right: 20px; background: rgba(0,255,0,0.1); border: 1px solid #00ff00; padding: 10px; z-index: 9999;">
+                    🔓 管理员模式已激活
+                </div>
+            `;
+            console.log("%c🟢 管理员模式: 已进入", "color: #00ff00; font-weight: bold;");
         }
+        
+        // 矩阵背景效果
+        const canvas = document.getElementById('matrixCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        const chars = "01";
+        const charArray = chars.split("");
+        const fontSize = 14;
+        const columns = canvas.width / fontSize;
+        const drops = [];
+        
+        for (let i = 0; i < columns; i++) {
+            drops[i] = 1;
+        }
+        
+        function drawMatrix() {
+            ctx.fillStyle = "rgba(0, 20, 0, 0.04)";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = "#00ff00";
+            ctx.font = fontSize + "px monospace";
+            
+            for (let i = 0; i < drops.length; i++) {
+                const text = charArray[Math.floor(Math.random() * charArray.length)];
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+        
+        let matrixInterval;
+        function startMatrix() {
+            if (!matrixInterval) {
+                matrixInterval = setInterval(drawMatrix, 35);
+            }
+        }
+        
+        function stopMatrix() {
+            clearInterval(matrixInterval);
+            matrixInterval = null;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+        
+        // 页面加载后启动矩阵效果
+        setTimeout(startMatrix, 1000);
+        
+        // 按钮功能
+        function runHack() {
+            const terminal = document.querySelector('.terminal');
+            const originalHTML = terminal.innerHTML;
+            
+            terminal.innerHTML += `
+                <div class="input-line">
+                    <span class="prompt">root@bret-24:~#</span> ./hack.sh --target localhost
+                    <div>> 正在初始化渗透测试...</div>
+                    <div>> 端口扫描中... [22, 80, 443, 8080]</div>
+                    <div>> 检测到开放端口: 80 (HTTP)</div>
+                    <div>> 正在枚举目录...</div>
+                    <div>> 发现潜在漏洞: 低风险</div>
+                    <div>> 生成报告: <span style="color:#00ff00">安全状态良好</span></div>
+                    <div>> 渗透测试完成，未发现高危漏洞</div>
+                </div>
+            `;
+            
+            setTimeout(() => {
+                terminal.innerHTML = originalHTML;
+                const typingElement = document.createElement('span');
+                typingElement.id = 'typing';
+                terminal.querySelector('.input-line:last-child').appendChild(typingElement);
+                terminal.querySelector('.input-line:last-child').innerHTML += '<span class="blink"></span>';
+                typeEffect(); // 重新启动打字效果
+            }, 5000);
+        }
+        
+        function showMatrix() {
+            if (matrixInterval) {
+                stopMatrix();
+                alert("矩阵效果已关闭");
+            } else {
+                startMatrix();
+                alert("矩阵效果已启动");
+            }
+        }
+        
+        function toggleTerminal() {
+            const terminal = document.querySelector('.terminal');
+            terminal.style.display = terminal.style.display === 'none' ? 'block' : 'none';
+        }
+        
+        // 窗口大小调整时重置canvas
+        window.addEventListener('resize', function() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+        
+        // 隐藏的Easter Egg：双击标题
+        document.querySelector('h1').addEventListener('dblclick', function() {
+            alert('🎉 发现隐藏彩蛋！\n\n你是今天第' + Math.floor(Math.random()*1000) + '位访客！\n\n保持好奇心，继续探索安全的世界吧！');
+        });
     </script>
 </body>
 </html>
