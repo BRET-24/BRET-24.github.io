@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🛠️ 网络安全工具箱 | BRET-24</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #0f0f23;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #00ff00;
+        }
+        
+        h1 {
+            color: #00ff00;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #88ff88;
+            font-size: 1.2rem;
+        }
+        
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+        
+        .tool-card {
+            background: rgba(0, 30, 0, 0.3);
+            border: 1px solid #008800;
+            border-radius: 10px;
+            padding: 25px;
+            transition: all 0.3s;
+        }
+        
+        .tool-card:hover {
+            transform: translateY(-5px);
+            border-color: #00ff00;
+            box-shadow: 0 10px 25px rgba(0, 255, 0, 0.2);
+        }
+        
+        .tool-card h2 {
+            color: #00ff00;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #008800;
+            padding-bottom: 10px;
+        }
+        
+        textarea, input, select {
+            width: 100%;
+            background: #000;
+            color: #00ff00;
+            border: 1px solid #008800;
+            padding: 12px;
+            margin: 10px 0;
+            font-family: monospace;
+            resize: vertical;
+        }
+        
+        button {
+            background: transparent;
+            color: #00ff00;
+            border: 1px solid #00ff00;
+            padding: 10px 20px;
+            margin: 10px 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+        
+        button:hover {
+            background: rgba(0, 255, 0, 0.1);
+        }
+        
+        .result {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid #008800;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 5px;
+            word-wrap: break-word;
+            font-family: monospace;
+        }
+        
+        .success { color: #00ff00; }
+        .error { color: #ff0000; }
+        
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid #008800;
+            color: #008800;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🛠️ 网络安全工具箱</h1>
+            <p class="subtitle">纯前端工具集合 | 信息安全学生必备</p>
+        </header>
+        
+        <div class="tools-grid">
+            <div class="tool-card">
+                <h2>🔐 Base64 编码/解码</h2>
+                <textarea id="base64Input" placeholder="输入文本..." rows="3"></textarea>
+                <div>
+                    <button onclick="base64Encode()">编码</button>
+                    <button onclick="base64Decode()">解码</button>
+                </div>
+                <div class="result" id="base64Result"></div>
+            </div>
+            
+            <div class="tool-card">
+                <h2>🔢 十六进制转换</h2>
+                <textarea id="hexInput" placeholder="输入文本或十六进制..." rows="3"></textarea>
+                <div>
+                    <button onclick="textToHex()">文本 → 十六进制</button>
+                    <button onclick="hexToText()">十六进制 → 文本</button>
+                </div>
+                <div class="result" id="hexResult"></div>
+            </div>
+            
+            <div class="tool-card">
+                <h2>🔄 URL 编码/解码</h2>
+                <textarea id="urlInput" placeholder="输入URL..." rows="3"></textarea>
+                <div>
+                    <button onclick="urlEncode()">URL编码</button>
+                    <button onclick="urlDecode()">URL解码</button>
+                </div>
+                <div class="result" id="urlResult"></div>
+            </div>
+            
+            <div class="tool-card">
+                <h2>🔡 ROT13 加密</h2>
+                <textarea id="rot13Input" placeholder="输入文本..." rows="3"></textarea>
+                <button onclick="rot13()">ROT13转换</button>
+                <div class="result" id="rot13Result"></div>
+                <p style="color: #88ff88; font-size: 0.9rem; margin-top: 10px;">
+                    ROT13：字母表偏移13位，加密解密相同操作。
+                </p>
+            </div>
+            
+            <div class="tool-card">
+                <h2>🔍 哈希计算器</h2>
+                <textarea id="hashInput" placeholder="输入要计算哈希的文本..." rows="3"></textarea>
+                <select id="hashAlgorithm">
+                    <option value="SHA-1">SHA-1</option>
+                    <option value="SHA-256" selected>SHA-256</option>
+                    <option value="SHA-384">SHA-384</option>
+                    <option value="SHA-512">SHA-512</option>
+                </select>
+                <button onclick="calculateHash()">计算哈希</button>
+                <div class="result" id="hashResult"></div>
+            </div>
+            
+            <div class="tool-card">
+                <h2>📊 密码强度检测</h2>
+                <input type="password" id="passwordInput" placeholder="输入密码...">
+                <button onclick="checkPassword()">检测强度</button>
+                <div class="result" id="passwordResult"></div>
+                <div style="height: 10px; background: #222; margin-top: 10px; border-radius: 5px;">
+                    <div id="passwordStrength" style="height: 100%; width: 0%; background: #f00; border-radius: 5px; transition: width 0.5s;"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin: 40px 0;">
+            <button onclick="clearAll()" style="background: #f00; border-color: #f00;">清空所有</button>
+            <button onclick="openAllTools()">打开所有工具</button>
+            <button onclick="viewSource()">查看源代码</button>
+        </div>
+        
+        <footer>
+            <p>⚠️ 注意：所有计算均在浏览器本地完成，数据不会发送到任何服务器</p>
+            <p>🎓 本工具箱仅供学习使用，请遵守网络安全法律法规</p>
+        </footer>
+    </div>
+    
+    <script>
+        // Base64 编码/解码
+        function base64Encode() {
+            const input = document.getElementById('base64Input').value;
+            if (!input) {
+                document.getElementById('base64Result').innerHTML = '<span class="error">请输入文本</span>';
+                return;
+            }
+            const encoded = btoa(input);
+            document.getElementById('base64Result').innerHTML = `<span class="success">${encoded}</span>`;
+        }
+        
+        function base64Decode() {
+            const input = document.getElementById('base64Input').value;
+            if (!input) {
+                document.getElementById('base64Result').innerHTML = '<span class="error">请输入Base64编码</span>';
+                return;
+            }
+            try {
+                const decoded = atob(input);
+                document.getElementById('base64Result').innerHTML = `<span class="success">${decoded}</span>`;
+            } catch (e) {
+                document.getElementById('base64Result').innerHTML = '<span class="error">解码失败，请输入有效的Base64编码</span>';
+            }
+        }
+        
+        // 十六进制转换
+        function textToHex() {
+            const input = document.getElementById('hexInput').value;
+            if (!input) {
+                document.getElementById('hexResult').innerHTML = '<span class="error">请输入文本</span>';
+                return;
+            }
+            let hex = '';
+            for (let i = 0; i < input.length; i++) {
+                hex += input.charCodeAt(i).toString(16).padStart(2, '0') + ' ';
+            }
+            document.getElementById('hexResult').innerHTML = `<span class="success">${hex.trim()}</span>`;
+        }
+        
+        function hexToText() {
+            const input = document.getElementById('hexInput').value;
+            if (!input) {
+                document.getElementById('hexResult').innerHTML = '<span class="error">请输入十六进制</span>';
+                return;
+            }
+            try {
+                const hex = input.replace(/\s/g, '');
+                let text = '';
+                for (let i = 0; i < hex.length; i += 2) {
+                    text += String.fromCharCode(parseInt(hex.substr(i, 2), 16));
+                }
+                document.getElementById('hexResult').innerHTML = `<span class="success">${text}</span>`;
+            } catch (e) {
+                document.getElementById('hexResult').innerHTML = '<span class="error">转换失败，请输入有效的十六进制</span>';
+            }
+        }
+        
+        // URL 编码/解码
+        function urlEncode() {
+            const input = document.getElementById('urlInput').value;
+            if (!input) {
+                document.getElementById('urlResult').innerHTML = '<span class="error">请输入文本</span>';
+                return;
+            }
+            const encoded = encodeURIComponent(input);
+            document.getElementById('urlResult').innerHTML = `<span class="success">${encoded}</span>`;
+        }
+        
+        function urlDecode() {
+            const input = document.getElementById('urlInput').value;
+            if (!input) {
+                document.getElementById('urlResult').innerHTML = '<span class="error">请输入URL编码</span>';
+                return;
+            }
+            try {
+                const decoded = decodeURIComponent(input);
+                document.getElementById('urlResult').innerHTML = `<span class="success">${decoded}</span>`;
+            } catch (e) {
+                document.getElementById('urlResult').innerHTML = '<span class="error">解码失败，请输入有效的URL编码</span>';
+            }
+        }
+        
+        // ROT13
+        function rot13() {
+            const input = document.getElementById('rot13Input').value;
+            if (!input) {
+                document.getElementById('rot13Result').innerHTML = '<span class="error">请输入文本</span>';
+                return;
+            }
+            let result = '';
+            for (let i = 0; i < input.length; i++) {
+                let char = input[i];
+                let code = input.charCodeAt(i);
+                
+                if (code >= 65 && code <= 90) { // 大写字母
+                    char = String.fromCharCode(((code - 65 + 13) % 26) + 65);
+                } else if (code >= 97 && code <= 122) { // 小写字母
+                    char = String.fromCharCode(((code - 97 + 13) % 26) + 97);
+                }
+                
+                result += char;
+            }
+            document.getElementById('rot13Result').innerHTML = `<span class="success">${result}</span>`;
+        }
+        
+        // 哈希计算
+        async function calculateHash() {
+            const input = document.getElementById('hashInput').value;
+            const algorithm = document.getElementById('hashAlgorithm').value;
+            
+            if (!input) {
+                document.getElementById('hashResult').innerHTML = '<span class="error">请输入文本</span>';
+                return;
+            }
+            
+            try {
+                const encoder = new TextEncoder();
+                const data = encoder.encode(input);
+                const hashBuffer = await crypto.subtle.digest(algorithm, data);
+                const hashArray = Array.from(new Uint8Array(hashBuffer));
+                const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+                
+                document.getElementById('hashResult').innerHTML = `
+                    <span class="success">${algorithm} 哈希值：</span><br>
+                    <span>${hashHex}</span>
+                `;
+            } catch (e) {
+                document.getElementById('hashResult').innerHTML = '<span class="error">哈希计算失败</span>';
+            }
+        }
+        
+        // 密码强度检测
+        function checkPassword() {
+            const password = document.getElementById('passwordInput').value;
+            const resultDiv = document.getElementById('passwordResult');
+            const strengthBar = document.getElementById('passwordStrength');
+            
+            if (!password) {
+                resultDiv.innerHTML = '<span class="error">请输入密码</span>';
+                strengthBar.style.width = '0%';
+                strengthBar.style.background = '#f00';
+                return;
+            }
+            
+            let score = 0;
+            let feedback = [];
+            
+            // 长度检查
+            if (password.length >= 8) score += 1;
+            if (password.length >= 12) score += 1;
+            
+            // 字符类型检查
+            if (/[a-z]/.test(password)) score += 1; // 小写字母
+            if (/[A-Z]/.test(password)) score += 1; // 大写字母
+            if (/[0-9]/.test(password)) score += 1; // 数字
+            if (/[^a-zA-Z0-9]/.test(password)) score += 2; // 特殊字符
+            
+            // 设置强度条
+            let width = 0;
+            let color = '#f00';
+            
+            if (score <= 3) {
+                width = 25;
+                color = '#f00';
+                feedback.push('强度：弱');
+            } else if (score <= 5) {
+                width = 50;
+                color = '#ff9900';
+                feedback.push('强度：中等');
+            } else if (score <= 7) {
+                width = 75;
+                color = '#99ff00';
+                feedback.push('强度：强');
+            } else {
+                width = 100;
+                color = '#00ff00';
+                feedback.push('强度：非常强');
+            }
+            
+            // 反馈建议
+            if (password.length < 8) feedback.push('建议：密码至少8位');
+            if (!/[A-Z]/.test(password)) feedback.push('建议：添加大写字母');
+            if (!/[0-9]/.test(password)) feedback.push('建议：添加数字');
+            if (!/[^a-zA-Z0-9]/.test(password)) feedback.push('建议：添加特殊字符');
+            
+            // 更新显示
+            strengthBar.style.width = width + '%';
+            strengthBar.style.background = color;
+            resultDiv.innerHTML = `<span class="success">${feedback.join('<br>')}</span>`;
+        }
+        
+        // 工具函数
+        function clearAll() {
+            document.querySelectorAll('textarea, input').forEach(el => el.value = '');
+            document.querySelectorAll('.result').forEach(el => el.innerHTML = '');
+            document.getElementById('passwordStrength').style.width = '0%';
+        }
+        
+        function openAllTools() {
+            alert('所有工具已就绪！开始你的安全实验吧。');
+        }
+        
+        function viewSource() {
+            const source = document.documentElement.outerHTML;
+            const newWindow = window.open();
+            newWindow.document.write('<pre>' + source + '</pre>');
+        }
+        
+        // 控制台彩蛋
+        console.log('%c🛡️ 网络安全工具箱已加载', 'color: #00ff00; font-size: 18px; font-weight: bold;');
+        console.log('%c🔐 所有工具均为纯前端实现，保护你的隐私', 'color: #00ffff;');
+        console.log('%c💡 提示：试试输入"flag{test}"到各个工具看看效果', 'color: #ff9900;');
+    </script>
+</body>
+</html>
