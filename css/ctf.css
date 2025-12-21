@@ -1,0 +1,196 @@
+/* css/ctf.css */
+/* CTF专区专用样式 */
+
+/* Write-up页面样式 */
+.writeup-content {
+    line-height: 1.8;
+    margin: 30px 0;
+}
+
+.writeup-content h2 {
+    color: var(--hacker-green);
+    margin: 30px 0 15px;
+    border-bottom: 1px solid var(--hacker-border);
+    padding-bottom: 10px;
+}
+
+.writeup-content h3 {
+    color: #88ff88;
+    margin: 25px 0 10px;
+}
+
+.writeup-content p {
+    margin: 15px 0;
+}
+
+.writeup-content pre {
+    background: #000;
+    border: 1px solid var(--hacker-border);
+    padding: 15px;
+    border-radius: 5px;
+    overflow-x: auto;
+    margin: 15px 0;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+}
+
+.writeup-content code {
+    background: rgba(0, 0, 0, 0.3);
+    color: var(--hacker-green);
+    padding: 2px 5px;
+    border-radius: 3px;
+    font-family: 'Courier New', monospace;
+}
+
+.writeup-content blockquote {
+    border-left: 3px solid var(--hacker-green);
+    padding-left: 15px;
+    margin: 20px 0;
+    color: var(--text-dim);
+    font-style: italic;
+}
+
+/* 挑战信息框 */
+.challenge-info {
+    background: rgba(0, 50, 0, 0.2);
+    border: 1px solid var(--hacker-border);
+    padding: 20px;
+    border-radius: 5px;
+    margin: 25px 0;
+}
+
+.challenge-info h3 {
+    margin-top: 0;
+    color: var(--hacker-green);
+}
+
+.challenge-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.challenge-meta span {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+}
+
+/* 解题步骤时间线 */
+.timeline {
+    position: relative;
+    padding-left: 30px;
+    margin: 30px 0;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--hacker-border);
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 30px;
+}
+
+.timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -34px;
+    top: 5px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--hacker-green);
+    border: 2px solid var(--hacker-dark);
+}
+
+.timeline-item h4 {
+    color: var(--hacker-green);
+    margin-bottom: 10px;
+}
+
+/* Flag展示样式 */
+.flag-box {
+    background: #000;
+    border: 2px dashed var(--hacker-green);
+    padding: 20px;
+    text-align: center;
+    margin: 30px 0;
+    border-radius: 5px;
+}
+
+.flag-box pre {
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin: 0;
+    color: var(--hacker-green);
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+/* 解题技巧提示 */
+.tip-box {
+    background: rgba(255, 165, 0, 0.1);
+    border: 1px solid #ffa500;
+    border-left: 4px solid #ffa500;
+    padding: 15px;
+    margin: 20px 0;
+    border-radius: 0 5px 5px 0;
+}
+
+.tip-box strong {
+    color: #ffa500;
+}
+
+.warning-box {
+    background: rgba(255, 0, 0, 0.1);
+    border: 1px solid #ff3333;
+    border-left: 4px solid #ff3333;
+    padding: 15px;
+    margin: 20px 0;
+    border-radius: 0 5px 5px 0;
+}
+
+.warning-box strong {
+    color: #ff3333;
+}
+
+/* 代码高亮示例 */
+.code-example {
+    position: relative;
+    margin: 20px 0;
+}
+
+.code-example .code-header {
+    background: #222;
+    color: #ccc;
+    padding: 8px 15px;
+    border-radius: 5px 5px 0 0;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+}
+
+.code-example pre {
+    margin: 0;
+    border-radius: 0 0 5px 5px;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .timeline {
+        padding-left: 20px;
+    }
+    
+    .timeline-item::before {
+        left: -24px;
+    }
+}

@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CTF Write-ups | BRET-24的安全实验室</title>
+    <!-- 引入全局样式 -->
+    <link rel="stylesheet" href="../css/main.css">
+    <!-- 引入CTF专用样式 -->
+    <link rel="stylesheet" href="../css/ctf.css">
+    <style>
+        /* 页面特定样式 */
+        .ctf-hero {
+            text-align: center;
+            padding: 60px 20px;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%);
+            border-bottom: 2px solid var(--hacker-border);
+            margin-bottom: 40px;
+        }
+        
+        .ctf-hero h1 {
+            font-size: 3rem;
+            color: var(--hacker-green);
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 40px 0;
+        }
+        
+        .stat-card {
+            background: rgba(0, 30, 0, 0.2);
+            border: 1px solid var(--hacker-border);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            color: var(--hacker-green);
+            font-weight: bold;
+        }
+        
+        .stat-label {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+        
+        .writeup-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin: 40px 0;
+        }
+        
+        .writeup-card {
+            background: rgba(0, 30, 0, 0.15);
+            border: 1px solid var(--hacker-border);
+            border-radius: 8px;
+            padding: 25px;
+            transition: all 0.3s;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+        
+        .writeup-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--hacker-green);
+            box-shadow: 0 15px 30px rgba(0, 255, 0, 0.15);
+        }
+        
+        .writeup-card h3 {
+            color: var(--hacker-green);
+            margin-bottom: 10px;
+        }
+        
+        .difficulty {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin: 5px 0;
+        }
+        
+        .easy { background: rgba(0, 255, 0, 0.1); color: #00ff00; border: 1px solid #00ff00; }
+        .medium { background: rgba(255, 165, 0, 0.1); color: #ffa500; border: 1px solid #ffa500; }
+        .hard { background: rgba(255, 0, 0, 0.1); color: #ff3333; border: 1px solid #ff3333; }
+        
+        .category-tags {
+            margin-top: 15px;
+        }
+        
+        .category-tag {
+            display: inline-block;
+            background: rgba(0, 150, 255, 0.1);
+            color: #0096ff;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+        
+        .view-all {
+            text-align: center;
+            margin: 50px 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="../index.html" class="logo">🔐 BRET-24 安全实验室</a>
+            <div class="nav-links">
+                <a href="../index.html">🏠 首页</a>
+                <a href="index.html" style="color: var(--hacker-green);">🏴 CTF专区</a>
+                <a href="../labs/index.html">🔬 实验区</a>
+                <a href="../tools/index.html">🛠️ 工具集</a>
+                <a href="../about.html">👤 关于我</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- CTF专区英雄区域 -->
+    <section class="ctf-hero">
+        <div class="container">
+            <h1>🏴 CTF 解题记录</h1>
+            <p style="font-size: 1.2rem; color: #88ff88; max-width: 800px; margin: 0 auto;">
+                记录我的CTF学习之路，分享解题思路，持续更新中...
+            </p>
+        </div>
+    </section>
+
+    <div class="container">
+        <!-- 统计信息 -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" id="totalWriteups">0</div>
+                <div class="stat-label">解题报告总数</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="totalPoints">0</div>
+                <div class="stat-label">累计得分</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="categories">5</div>
+                <div class="stat-label">技术分类</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="ongoing">2</div>
+                <div class="stat-label">进行中的比赛</div>
+            </div>
+        </div>
+
+        <!-- 最新Write-ups -->
+        <div class="card">
+            <h2>📝 最新解题报告</h2>
+            <p>以下是我最近完成的CTF挑战的详细解题过程：</p>
+            
+            <div class="writeup-grid">
+                <!-- Write-up 1 -->
+                <a href="writeups/picoctf-web-gauntlet.html" class="writeup-card">
+                    <h3>PicoCTF: Web Gauntlet</h3>
+                    <div><span class="difficulty medium">中等难度</span></div>
+                    <p style="color: var(--text-dim); margin: 10px 0; font-size: 0.9rem;">
+                        一个多层次的Web安全挑战，涉及SQL注入、目录遍历和文件上传漏洞。
+                    </p>
+                    <div class="category-tags">
+                        <span class="category-tag">Web安全</span>
+                        <span class="category-tag">SQL注入</span>
+                        <span class="category-tag">文件上传</span>
+                    </div>
+                    <div style="margin-top: 15px; color: #888; font-size: 0.8rem;">
+                        2024年3月15日 • 阅读时间: 15分钟
+                    </div>
+                </a>
+                
+                <!-- Write-up 2 -->
+                <a href="writeups/tryhackme-basic-pentesting.html" class="writeup-card">
+                    <h3>TryHackMe: Basic Pentesting</h3>
+                    <div><span class="difficulty easy">入门难度</span></div>
+                    <p style="color: var(--text-dim); margin: 10px 0; font-size: 0.9rem;">
+                        基础的渗透测试实验，学习信息收集、枚举和基础漏洞利用。
+                    </p>
+                    <div class="category-tags">
+                        <span class="category-tag">渗透测试</span>
+                        <span class="category-tag">信息收集</span>
+                        <span class="category-tag">枚举</span>
+                    </div>
+                    <div style="margin-top: 15px; color: #888; font-size: 0.8rem;">
+                        2024年3月10日 • 阅读时间: 10分钟
+                    </div>
+                </a>
+                
+                <!-- Write-up 3 -->
+                <a href="writeups/htb-buff.html" class="writeup-card">
+                    <h3>HackTheBox: Buff</h3>
+                    <div><span class="difficulty medium">中等难度</span></div>
+                    <p style="color: var(--text-dim); margin: 10px 0; font-size: 0.9rem;">
+                        Gym Management System的漏洞利用，涉及服务枚举、文件上传和权限提升。
+                    </p>
+                    <div class="category-tags">
+                        <span class="category-tag">漏洞利用</span>
+                        <span class="category-tag">权限提升</span>
+                        <span class="category-tag">文件上传</span>
+                    </div>
+                    <div style="margin-top: 15px; color: #888; font-size: 0.8rem;">
+                        2024年3月5日 • 阅读时间: 20分钟
+                    </div>
+                </a>
+                
+                <!-- Write-up 4 -->
+                <a href="writeups/overthewire-bandit.html" class="writeup-card">
+                    <h3>OverTheWire: Bandit</h3>
+                    <div><span class="difficulty easy">入门难度</span></div>
+                    <p style="color: var(--text-dim); margin: 10px 0; font-size: 0.9rem;">
+                        Linux命令行和基础安全概念的入门挑战，非常适合初学者。
+                    </p>
+                    <div class="category-tags">
+                        <span class="category-tag">Linux</span>
+                        <span class="category-tag">命令行</span>
+                        <span class="category-tag">基础安全</span>
+                    </div>
+                    <div style="margin-top: 15px; color: #888; font-size: 0.8rem;">
+                        2024年2月28日 • 阅读时间: 8分钟
+                    </div>
+                </a>
+            </div>
+            
+            <div class="view-all">
+                <a href="writeups/" class="btn btn-primary">查看所有解题报告 →</a>
+            </div>
+        </div>
+
+        <!-- 技术分类 -->
+        <div class="card">
+            <h2>🔧 技术分类</h2>
+            <p>按技术方向浏览我的CTF解题记录：</p>
+            
+            <div class="writeup-grid">
+                <a href="challenges/web.html" class="writeup-card">
+                    <h3>🌐 Web安全</h3>
+                    <p style="color: var(--text-dim); margin: 10px 0; font-size: 0.9rem;">
+                        SQL注入、XSS、CSRF、文件上传、目录遍历等Web漏洞。
+                    </p>
+                    <div style="margin-top: 15px; color: #888; font-size: 0.8rem;">
+                        12篇报告 • 持续更新
+                    </div>
+                </a>
+                
+                <a href="challenges/crypto.html" class="writeup-card">
+                    <h3>🔐 密码学</h3>
+                    <p style="color: var(--text-dim); margin: 10px 0; font-size: 0.9rem;">
+                        古典密码、现代加密、哈希函数、RSA、AES等加密技术。
+                    </p>
+                    <div style="margin-top: 15px; color: #888; font-size: 0.8rem;">
+                        8篇报告 • 持续更新
+                    </div>
+                </a>
+                
+                <a href="challenges/forensics.html" class="writeup-card">
+                    <h3>🔍 数字取证</h3>
+                    <p style="color: var(--text-dim); margin: 10px 0; font-size: 0.9rem;">
+                        文件分析、内存取证、网络流量分析、隐写术等。
+                    </p>
+                    <div style="margin-top: 15px; color: #888; font-size: 0.8rem;">
+                        6篇报告 • 持续更新
+                    </div>
+                </a>
+                
+                <a href="challenges/reversing.html" class="writeup-card">
+                    <h3>⚙️ 逆向工程</h3>
+                    <p style="color: var(--text-dim); margin: 10px 0; font-size: 0.9rem;">
+                        二进制分析、恶意代码分析、调试、反编译等技术。
+                    </p>
+                    <div style="margin-top: 15px; color: #888; font-size: 0.8rem;">
+                        5篇报告 • 持续更新
+                    </div>
+                </a>
+                
+                <a href="challenges/pwn.html" class="writeup-card">
+                    <h3>💥 二进制漏洞</h3>
+                    <p style="color: var(--text-dim); margin: 10px 0; font-size: 0.9rem;">
+                        缓冲区溢出、ROP、格式化字符串、堆漏洞等。
+                    </p>
+                    <div style="margin-top: 15px; color: #888; font-size: 0.8rem;">
+                        4篇报告 • 持续更新
+                    </div>
+                </a>
+                
+                <a href="challenges/misc.html" class="writeup-card">
+                    <h3>🎯 杂项</h3>
+                    <p style="color: var(--text-dim); margin: 10px 0; font-size: 0.9rem;">
+                        OSINT、编程、网络、系统管理等其他类型挑战。
+                    </p>
+                    <div style="margin-top: 15px; color: #888; font-size: 0.8rem;">
+                        7篇报告 • 持续更新
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- 学习资源 -->
+        <div class="card">
+            <h2>📚 学习资源推荐</h2>
+            <p>以下是我在学习过程中发现的优质资源：</p>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 20px;">
+                <div>
+                    <h3 style="color: var(--hacker-green); margin-bottom: 10px;">🆓 免费平台</h3>
+                    <ul style="padding-left: 20px; color: var(--text-dim);">
+                        <li><a href="https://tryhackme.com" style="color: #00aaff;">TryHackMe</a> - 新手友好，引导式学习</li>
+                        <li><a href="https://overthewire.org" style="color: #00aaff;">OverTheWire</a> - 命令行和基础安全</li>
+                        <li><a href="https://picoctf.org" style="color: #00aaff;">PicoCTF</a> - CTF入门最佳选择</li>
+                        <li><a href="https://ctflearn.com" style="color: #00aaff;">CTFlearn</a> - 社区驱动的CTF平台</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 style="color: var(--hacker-green); margin-bottom: 10px;">💪 挑战平台</h3>
+                    <ul style="padding-left: 20px; color: var(--text-dim);">
+                        <li><a href="https://www.hackthebox.com" style="color: #00aaff;">HackTheBox</a> - 综合渗透测试平台</li>
+                        <li><a href="https://app.hackinghub.io" style="color: #00aaff;">HackingHub</a> - 实战实验室</li>
+                        <li><a href="https://www.root-me.org" style="color: #00aaff;">Root-Me</a> - 多语言安全挑战</li>
+                        <li><a href="https://www.vulnhub.com" style="color: #00aaff;">VulnHub</a> - 漏洞虚拟机</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 style="color: var(--hacker-green); margin-bottom: 10px;">📖 学习资料</h3>
+                    <ul style="padding-left: 20px; color: var(--text-dim);">
+                        <li><a href="https://ctf101.org" style="color: #00aaff;">CTF 101</a> - CTF入门指南</li>
+                        <li><a href="https://owasp.org" style="color: #00aaff;">OWASP</a> - Web安全权威</li>
+                        <li><a href="https://www.exploit-db.com" style="color: #00aaff;">Exploit-DB</a> - 漏洞利用数据库</li>
+                        <li><a href="https://github.com/ctfs" style="color: #00aaff;">CTF Wiki</a> - GitHub上的CTF资源</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <p>🔐 本网站所有内容仅供学习参考，请遵守网络安全法律法规</p>
+            <div class="footer-links">
+                <a href="../index.html">首页</a>
+                <a href="index.html">CTF专区</a>
+                <a href="../labs/index.html">实验区</a>
+                <a href="../tools/index.html">工具集</a>
+                <a href="../about.html">关于我</a>
+                <a href="https://github.com/BRET-24">GitHub</a>
+            </div>
+            <p style="margin-top: 20px; font-size: 0.8rem; color: #666;">
+                &copy; 2024 BRET-24的安全实验室 | 最后更新: <span id="lastUpdate"></span>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // 动态更新统计数字
+        function animateCounter(elementId, targetValue, duration = 2000) {
+            const element = document.getElementById(elementId);
+            let start = 0;
+            const increment = targetValue / (duration / 16); // 60fps
+            const timer = setInterval(() => {
+                start += increment;
+                if (start >= targetValue) {
+                    element.textContent = targetValue;
+                    clearInterval(timer);
+                } else {
+                    element.textContent = Math.floor(start);
+                }
+            }, 16);
+        }
+        
+        // 页面加载后启动动画
+        window.onload = function() {
+            // 统计数字动画
+            animateCounter('totalWriteups', 42);
+            animateCounter('totalPoints', 1250);
+            
+            // 更新最后修改日期
+            const lastUpdate = new Date(document.lastModified);
+            document.getElementById('lastUpdate').textContent = lastUpdate.toLocaleDateString('zh-CN');
+            
+            // 控制台彩蛋
+            console.log('%c🏴 CTF专区已加载', 'color: #00ff00; font-size: 18px; font-weight: bold;');
+            console.log('%c💡 提示：检查页面元素，看看有没有隐藏的flag？', 'color: #ff9900;');
+            
+            // 隐藏的CTF小游戏（在控制台玩）
+            window.findFlag = function() {
+                console.log('%c🎉 恭喜找到隐藏功能！', 'color: #00ff00; font-size: 16px;');
+                console.log('试试在控制台输入：decodeFlag("ZmxhZ3t3ZWxjMG0zX3QwX2N0Zl93cjF0M3VwIX0=")');
+            };
+            
+            window.decodeFlag = function(base64) {
+                try {
+                    const flag = atob(base64);
+                    console.log(`%c🏁 ${flag}`, 'color: #00ff00; font-size: 20px; font-weight: bold;');
+                    console.log('%c🎮 隐藏关卡解锁成功！', 'color: #ff00ff;');
+                } catch(e) {
+                    console.log('%c❌ 解码失败', 'color: #ff0000;');
+                }
+            };
+        };
+        
+        // 双击标题触发彩蛋
+        document.querySelector('h1').addEventListener('dblclick', function() {
+            alert('🎮 隐藏功能激活！\n\n查看浏览器控制台(Console)有惊喜！');
+            window.findFlag();
+        });
+    </script>
+</body>
+</html>
